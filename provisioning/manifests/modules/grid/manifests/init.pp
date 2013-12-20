@@ -1,34 +1,25 @@
-class fl(
-		$target_dir      = '/usr/local/bin',
-		$fl_file         = 'fl',
-		$logoutput       = false,
-		$svn_login,
-		$svn_pass
+class grid(
+	$target_dir = '/home/vagrant/',
+	$port = '4445'
 	) {
 
-
-	$install_path        = '/home/vagrant'
-
-
-	exec { 'download_fl':
-		command     => "/usr/bin/svn --non-interactive --username=$svn_login --password=$svn_pass co svn://svn.bvidev.com/dev/util/fl-utils/trunk fl-utils",
+	exec { 'clone_grid':
+		command     => "git clone https://github.com/benschw/docker-selenium-grid.git",
 		user        => "vagrant",
-		cwd         => $tmp_path,
+		cwd         => $target_dir,
 		require     => [
-			Package['subversion'],
+			Package['git'],
+			Package['git'],
 		],
-		creates     => "$tmp_path/fl-utils",
+		creates     => "$target_dir/docker-selenium-grid",
 	}
 
-	exec { 'build_fl':
-		command     => "/usr/bin/ant build dist",
-		user        => "vagrant",
-		cwd         => "$tmp_path/fl-utils",
+	exec { 'run_grid':
+		command     => "$target_dir/docker-selenium-grid/grid.sh start $port",
+		user        => "root",
 		require     => [
-			Package['ant'],
-			Exec['download_fl'],
-			File["/etc/php5/cli/conf.d/fl.ini"],
-		],
-		creates     => "$tmp_path/fl-utils/dist/fl",
+			Class['docker'],
+			Exec['clone_grid']
+		]
 	}
 }
