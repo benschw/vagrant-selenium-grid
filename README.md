@@ -1,25 +1,23 @@
 ## install
 
-npm install -g protractor
+	vagrant up
 
-sudo docker build -t seleniumsa ./selenium-standalone
+thats it: this will boot a selenium grid cluster with 3 firefox nodes running.
 
-sudo docker run -d -p 4444:4444 seleniumsa
+Tweak the settings by shelling in and working with the 
+[docker-selenium-grid](https://github.com/benschw/docker-selenium-grid) repo:
 
-sudo docker run -p 4444:4444 -i -t seleniumsa
+	vagrant ssh
+	cd docker-selenium-grid
+	./grid.sh
 
-DOCKER_BRIDGE_IP=$(/sbin/ifconfig docker0 | sed -n '2 p' | awk '{print $2}' | cut -d":" -f2)
+## test your install
 
-protractor docker-conf.js --seleniumAddress=http://$DOCKER_BRIDGE_IP:4444/wd/hub
+If you want to make sure it works, install 
+[protractor](https://github.com/angular/protractor) and run `./test.sh`
+ 
 
-
-
-
-
-
-
+	npm install -g protractor
+	./test.sh
 
 
-
-java -jar selenium-server-standalone-2.37.0.jar -role hub
-phantomjs --webdriver=5555 --webdriver-selenium-grid-hub=http://127.0.0.1:4444
